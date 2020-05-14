@@ -1,6 +1,9 @@
 #pragma once
-#include "RepositoryFileTXT.h"
+#include <iostream>
 #include <assert.h>
+#include "RepositoryFileTXT.h"
+
+using namespace std;
 
 class TestRepositoryFileTXT {
 private:

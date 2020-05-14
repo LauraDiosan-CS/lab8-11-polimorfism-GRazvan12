@@ -1,6 +1,9 @@
 #pragma once
-#include "RepositoryFileCSV.h"
+#include <iostream>
 #include <assert.h>
+#include "RepositoryFileCSV.h"
+
+using namespace std;
 
 class TestRepositoryFileCSV {
 private:

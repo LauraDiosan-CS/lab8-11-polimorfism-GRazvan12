@@ -22,6 +22,9 @@ void TestEmployee::testConstructors() {
 	Employee e3(e2);
 	assert(e3.getID() == 1 && e3.getName() == "nicu" && e3.getEmail() == "nicu@ubb" &&
 		e3.getDegree() == -1);
+	Employee e4("1 nicu nicu@ubb -1", ' ');
+	assert(e4.getID() == 1 && e4.getName() == "nicu", && e4.getEmail() == "nicu@ubb" &&
+		e4.getDegree() == -1);
 
 	Employee* pe1 = new Employee();
 	assert(pe1->getID() == 0 && pe1->getName() == "" && pe1->getEmail() == "" &&
@@ -49,7 +52,7 @@ void TestEmployee::testSettersAndGetters() {
 	e.setEmail("porodica@ubb");
 	e.setDegree(99);
 
-	assert(e.getID() == 1 && e.getName() == "porodica" && 
+	assert(e.getID() == 1 && e.getName() == "porodica" &&
 		e.getEmail() == "porodica@ubb" && e.getDegree() == 99);
 }
 
@@ -98,5 +101,5 @@ void TestEmployee::testToString() {
 	Employee e(1, "nicu", "nicu@ubb", -1);
 	string s = e.toString(",");
 
-	assert(s == "E,1,nicu,nicu@ubb,-1");
+	assert(s == "1,nicu,nicu@ubb,-1");
 }

@@ -10,13 +10,13 @@ void TestRepositoryFileCSV::testAll() {
 void TestRepositoryFileCSV::testConsctructors() {
 	RepositoryFileCSV<Medicament> repo1;
 	assert(repo1.getFileName() == "");
-	RepositoryFileCSV<Medicament> repo("Test.txt");
-	assert(repo.getFileName() == "Test.txt");
+	RepositoryFileCSV<Medicament> repo("Test.csv");
+	assert(repo.getFileName() == "Test.csv");
 
 	RepositoryFileCSV<Medicament>* prepo1 = new RepositoryFileCSV<Medicament>();
 	assert(prepo1->getFileName() == "");
-	RepositoryFileCSV<Medicament>* prepo = new RepositoryFileCSV<Medicament>("Test.txt");
-	assert(prepo->getFileName() == "Test.txt");
+	RepositoryFileCSV<Medicament>* prepo = new RepositoryFileCSV<Medicament>("Test.csv");
+	assert(prepo->getFileName() == "Test.csv");
 
 	delete prepo1;
 	delete prepo;
@@ -26,8 +26,8 @@ void TestRepositoryFileCSV::testConsctructors() {
 void TestRepositoryFileCSV::testSettersAndGetters() {
 	RepositoryFileCSV<Employee> repo;
 	assert(repo.getFileName() == "" && repo.getSize() == 0);
-	repo.setFileName("Test.txt");
-	assert(repo.getFileName() == "Test.txt");
+	repo.setFileName("Test.csv");
+	assert(repo.getFileName() == "Test.csv");
 
 	Employee* e = new Employee(1, "nicu", "nicu@ubb", 4);
 	repo.add(e);
@@ -41,13 +41,12 @@ void TestRepositoryFileCSV::testSettersAndGetters() {
 
 //Desc: function to test the file function of class RepositoryFileTXT
 void TestRepositoryFileCSV::testFileFunctions() {
-	RepositoryFileCSV<Employee> repo("Test.txt");
+	RepositoryFileCSV<Employee> repo("Test.csv");
 	repo.loadFromFile();
 	assert(repo.getSize() == 0);
 
 	Employee* e = new Employee(1, "nicu", "nicu@ubb", 4);
 	repo.add(e);
-	repo.loadFromFile();
 	assert(repo.getSize() == 1);
 
 	repo.empty();

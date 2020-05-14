@@ -3,7 +3,9 @@
 //Desc: creates a new object of type Employee
 //In: -
 //Out: a new object of type Employee with implicit values
-Employee::Employee() : IEntity() {
+Employee::Employee(){
+	this->id = 0;
+	this->name = "";
 	this->email = "";
 	this->accessDegree = 0;
 }
@@ -14,7 +16,9 @@ Employee::Employee() : IEntity() {
 //    email, string - the email to be given to the new object
 //	  accessDegree, int - the access degree to be given to the new object
 //Out: a new object of type Employee with values given by this parameters
-Employee::Employee(int id, string name, string email, int accessDegree) : IEntity(id, name){
+Employee::Employee(int id, string name, string email, int accessDegree){
+	this->id = id;
+	this->name = name;
 	this->email = email;
 	this->accessDegree = accessDegree;
 }
@@ -22,9 +26,22 @@ Employee::Employee(int id, string name, string email, int accessDegree) : IEntit
 //Desc: creates a new object of type Employee
 //In: emp, const Employee& - an object of type Employee
 //Out: a new object of type Employee with values given by the object in parameters
-Employee::Employee(const Employee& emp) : IEntity(emp) {
+Employee::Employee(const Employee& emp){
+	this->id = emp.id;
+	this->name = emp.name;
 	this->email = emp.email;
 	this->accessDegree = emp.accessDegree;
+}
+
+//Desc: creates a new object of type Employee
+//In:
+//Out:
+Employee::Employee(string line, char delim) {
+	vector<string> words = split(line, delim);
+	this->id = stoi(words[0]);
+	this->name = words[1];
+	this->email = words[2];
+	this->accessDegree = stoi(words[3]);
 }
 
 //Desc: destroys an object of type Employee
@@ -32,6 +49,20 @@ Employee::Employee(const Employee& emp) : IEntity(emp) {
 //Out -
 Employee::~Employee()
 {
+}
+
+//Desc: sets a new id to the current object
+//In: id, int - the new id
+//Out: -
+void Employee::setID(int id) {
+	this->id = id;
+}
+
+//Desc: sets a new name to the current object
+//In: name, string - the new name
+//Out: -
+void Employee::setName(string name) {
+	this->name = name;
 }
 
 //Desc: sets a new email to the current object
@@ -46,6 +77,20 @@ void Employee::setEmail(string email) {
 //Out: -
 void Employee::setDegree(int accessDegree) {
 	this->accessDegree = accessDegree;
+}
+
+//Desc: access the id of the current object
+//In: -
+//Out: the object's id
+int Employee::getID() const {
+	return this->id;
+}
+
+//Desc: access the name of the current object
+//In: -
+//Out: the object's name
+string Employee::getName() const {
+	return this->name;
 }
 
 //Desc: access the email of the current object
@@ -77,36 +122,36 @@ Employee& Employee::operator=(const Employee& emp) {
 }
 
 //Desc: checks if the objects are equal
-//In: e, const IEntity& - an object of type IEntity
+//In: e, const Employee& - an object of type Employee
 //Out: true/false
-bool Employee::operator==(const IEntity& e) {
-	return (((Employee*)this)->id == ((Employee&)e).id && ((Employee*)this)->name == ((Employee&)e).name &&
-		((Employee*)this)->email == ((Employee&)e).email && ((Employee*)this)->accessDegree == ((Employee&)e).accessDegree);
+bool Employee::operator==(const Employee& e) {
+	return (this->id == e.id && this->name == e.name &&
+		this->email == e.email && this->accessDegree == e.accessDegree);
 }
 
 //Desc: checks if the objects are equal
-//In: e, const IEntity& - an object of type IEntity
+//In: e, const Employee& - an object of type Employee
 //Out: true/false
-bool Employee::operator!=(const IEntity& e) {
-	return (((Employee*)this)->id != ((Employee&)e).id || ((Employee*)this)->name != ((Employee&)e).name ||
-		((Employee*)this)->email != ((Employee&)e).email || ((Employee*)this)->accessDegree != ((Employee&)e).accessDegree);
+bool Employee::operator!=(const Employee& e) {
+	return (this->id != e.id || this->name != e.name ||
+		this->email != e.email || this->accessDegree != e.accessDegree);
 }
 
 //Desc: creates a clone of the current object
 //In: -
-//Out: emp, IEntity* - the clone of the current object
-IEntity* Employee::clone() {
+//Out: emp, Employee* - the clone of the current object
+Employee* Employee::clone() {
 	Employee* emp = new Employee(this->id, this->name, this->email, this->accessDegree);
 
 	return emp;
 }
 
 //Desc: check if current object has the same values with another object
-//In: ent, IEntity* - the object to check the equality with
+//In: ent, Employee* - the object to check the equality with
 //Out: true/false
-bool Employee::equals(IEntity* ent) {
-	return ((this->id == ((Employee*)ent)->id) && (this->name == ((Employee*)ent)->name) &&
-		(this->email == ((Employee*)ent)->email) && (this->accessDegree == ((Employee*)ent)->accessDegree));
+bool Employee::equals(Employee* ent) {
+	return ((this->id == ent->id) && (this->name == ent->name) &&
+		(this->email == ent->email) && (this->accessDegree == ent->accessDegree));
 }
 
 //Desc: turns current object into a string with values separated by a delimiter
@@ -115,7 +160,7 @@ bool Employee::equals(IEntity* ent) {
 string Employee::toString(string del) {
 	string obj = "";
 
-	obj = obj + "E" + del + to_string(this->id) + del + this->name + del + this->email + del +
+	obj = obj + to_string(this->id) + del + this->name + del + this->email + del +
 		to_string(this->accessDegree);
 
 	return obj;

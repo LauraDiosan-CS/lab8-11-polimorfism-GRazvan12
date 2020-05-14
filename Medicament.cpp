@@ -3,7 +3,9 @@
 //Desc: creates a new object of type Medicament
 //In: -
 //Out: a new object of type Medicament with implicit values
-Medicament::Medicament() : IEntity() {
+Medicament::Medicament(){
+	this->id = 0;
+	this->name = "";
 	this->needPrescription = false;
 	this->stockNr = 0;
 	this->producer = "";
@@ -16,7 +18,9 @@ Medicament::Medicament() : IEntity() {
 //	  stockNr, int - the stock number to be given to the new object
 //	  producer, string - the producer to be given to the new object
 //Out: a new object of type Medicament with values given by this parameters
-Medicament::Medicament(int id, string name, bool needPrescription, int stockNr, string producer) : IEntity(id, name) {
+Medicament::Medicament(int id, string name, bool needPrescription, int stockNr, string producer){
+	this->id = id;
+	this->name = name;
 	this->needPrescription = needPrescription;
 	this->stockNr = stockNr;
 	this->producer = producer;
@@ -25,10 +29,21 @@ Medicament::Medicament(int id, string name, bool needPrescription, int stockNr, 
 //Desc: creates a new object of type Medicament
 //In: med, const Medicament& - an object of type Medicament
 //Out: a new object of type Medicament with values given by the object in parameters
-Medicament::Medicament(const Medicament& med) : IEntity(med) {
+Medicament::Medicament(const Medicament& med){
+	this->id = med.id;
+	this->name = med.name;
 	this->needPrescription = med.needPrescription;
 	this->stockNr = med.stockNr;
 	this->producer = med.producer;
+}
+
+Medicament::Medicament(string line, char delim) {
+	vector<string> words = split(line, delim);
+	this->id = stoi(words[0]);
+	this->name = words[1];
+	this->needPrescription = (words[2] == "1") ? true : false;
+	this->stockNr= stoi(words[3]);
+	this->producer = words[4];
 }
 
 //Desc: destroys an object of type Medicament
@@ -36,6 +51,20 @@ Medicament::Medicament(const Medicament& med) : IEntity(med) {
 //Out -
 Medicament::~Medicament()
 {
+}
+
+//Desc: sets a new id to the current object
+//In: id, int - the new id
+//Out: -
+void Medicament::setID(int id) {
+	this->id = id;
+}
+
+//Desc: sets a new name to the current object
+//In: name, string - the new name
+//Out: -
+void Medicament::setName(string name) {
+	this->name = name;
 }
 
 //Desc: sets a new necessity of prescription to the current object
@@ -57,6 +86,20 @@ void Medicament::setStockNr(int stockNr) {
 //Out: -
 void Medicament::setProducer(string producer) {
 	this->producer = producer;
+}
+
+//Desc: access the id of the current object
+//In: -
+//Out: the object's id
+int Medicament::getID() const {
+	return this->id;
+}
+
+//Desc: access the name of the current object
+//In: -
+//Out: the object's name
+string Medicament::getName() const {
+	return this->name;
 }
 
 //Desc: access the necessity of prescription of the current object
@@ -96,43 +139,39 @@ Medicament& Medicament::operator=(const Medicament& med) {
 }
 
 //Desc: checks if the objects are equal
-//In: e, const IEntity& - an object of type IEntity
+//In: e, const Medicament& - an object of type Medicament
 //Out: true/false
-bool Medicament::operator==(const IEntity& e) {
-	return (((Medicament*)this)->id == ((Medicament&)e).id &&
-		((Medicament*)this)->name == ((Medicament&)e).name &&
-		((Medicament*)this)->needPrescription == ((Medicament&)e).needPrescription &&
-		((Medicament*)this)->stockNr == ((Medicament&)e).stockNr && 
-		((Medicament*)this)->producer == ((Medicament&)e).producer);
+bool Medicament::operator==(const Medicament& e) {
+	return (this->id == e.id && this->name == e.name &&
+		this->needPrescription == e.needPrescription &&
+		this->stockNr == e.stockNr && this->producer == e.producer);
 }
 
 //Desc: checks if the objects are equal
-//In: e, const IEntity& - an object of type IEntity
+//In: e, const Medicament& - an object of type Medicament
 //Out: true/false
-bool Medicament::operator!=(const IEntity& e) {
-	return (((Medicament*)this)->id != ((Medicament&)e).id ||
-		((Medicament*)this)->name != ((Medicament&)e).name ||
-		((Medicament*)this)->needPrescription != ((Medicament&)e).needPrescription ||
-		((Medicament*)this)->stockNr != ((Medicament&)e).stockNr ||
-		((Medicament*)this)->producer != ((Medicament&)e).producer);
+bool Medicament::operator!=(const Medicament& e) {
+	return (this->id != e.id || this->name != e.name ||
+		this->needPrescription != e.needPrescription ||
+		this->stockNr != e.stockNr || this->producer != e.producer);
 }
 
 //Desc: creates a clone of the current object
 //In: -
-//Out: med, IEntity* - the clone of the current object
-IEntity* Medicament::clone() {
+//Out: med, Medicament* - the clone of the current object
+Medicament* Medicament::clone() {
 	Medicament* med = new Medicament(this->id, this->name, this->needPrescription, this->stockNr, this->producer);
 
 	return med;
 }
 
 //Desc: check if current object has the same values with another object
-//In: ent, IEntity* - the object to check the equality with
+//In: ent, Medicament* - the object to check the equality with
 //Out: true/false
-bool Medicament::equals(IEntity* ent) {
-	return ((this->id == ((Medicament*)ent)->id) && (this->name == ((Medicament*)ent)->name) &&
-		(this->needPrescription == ((Medicament*)ent)->needPrescription) &&
-		(this->stockNr == ((Medicament*)ent)->stockNr) && (this->producer == ((Medicament*)ent)->producer));
+bool Medicament::equals(Medicament* ent) {
+	return ((this->id == ent->id) && (this->name == ent->name) &&
+		(this->needPrescription == ent->needPrescription) &&
+		(this->stockNr == ent->stockNr) && (this->producer == ent->producer));
 }
 
 //Desc: turns current object into a string with values separated by a delimiter
@@ -141,7 +180,7 @@ bool Medicament::equals(IEntity* ent) {
 string Medicament::toString(string del) {
 	string obj = "";
 
-	obj = obj + "M" + del + to_string(this->id) + del + this->name + del + to_string(this->needPrescription) + del +
+	obj = obj + to_string(this->id) + del + this->name + del + to_string(this->needPrescription) + del +
 		to_string(stockNr) + del + this->producer;
 
 	return obj;

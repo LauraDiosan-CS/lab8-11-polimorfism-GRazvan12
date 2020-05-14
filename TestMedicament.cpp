@@ -24,7 +24,7 @@ void TestMedicament::testConstructors() {
 		m3.getStockNr() == 100 && m3.getProducer() == "ungaria");
 
 
-	Medicament *pm1 = new Medicament();
+	Medicament* pm1 = new Medicament();
 	assert(pm1->getID() == 0 && pm1->getName() == "" && pm1->getPrescription() == false &&
 		pm1->getStockNr() == 0 && pm1->getProducer() == "");
 	Medicament* pm2 = new Medicament(2, "paracetamol", true, 12, "nimeni");
@@ -103,5 +103,5 @@ void TestMedicament::testToString() {
 	Medicament m(1, "nurofen", false, 100, "ungaria");
 	string s = m.toString(",");
 
-	assert(s == "M,1,nurofen,0,100,ungaria");
+	assert(s == "1,nurofen,0,100,ungaria");
 }

@@ -1,6 +1,9 @@
 #pragma once
-#include "Medicament.h"
+#include <iostream>
 #include <assert.h>
+#include "Medicament.h"
+
+using namespace std;
 
 class TestMedicament {
 private:

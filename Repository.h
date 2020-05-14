@@ -1,16 +1,15 @@
 #pragma once
-#include "IEntity.h"
-#include <string>
 #include <iostream>
 #include <fstream>
-#include "Array.h"
 #include "Medicament.h"
 #include "Employee.h"
+#include "MyException.h"
 
+using namespace std;
 
 template<class T> class Repository {
 protected:
-	Array arr;
+	vector<T*> arr;
 	string fileName;
 public:
 	
@@ -20,17 +19,15 @@ public:
 
 	virtual void loadFromFile();
 	virtual void saveToFile();
-	virtual void setFileName(string);
-	virtual string getFileName();
-	virtual void add(IEntity*);
-	virtual void remove(int);
-	virtual void update(IEntity*, IEntity*);
-	virtual IEntity* getElemPos(int);
-	virtual Array getAll();
-	virtual int getSize();
-	virtual void empty();
-
-	
+	void setFileName(string);
+	string getFileName();
+	void add(T*);
+	void remove(int);
+	void update(T*, T*);
+	T* getElemPos(int);
+	vector<T*> getAll();
+	int getSize();
+	void empty();
 };
 
 //Desc: creates a new object of type Repository
@@ -52,6 +49,12 @@ template<class T> Repository<T>::Repository(string fileName) {
 //Out: -
 template<class T> Repository<T>::~Repository()
 {
+	for (size_t i = 0; i < this->arr.size(); i++)
+		if (this->arr[i]) {
+			delete this->arr[i];
+			this->arr[i] = NULL;
+		}
+	this->arr.clear();
 }
 
 //Desc: sets a new file name to the current object
@@ -69,19 +72,32 @@ template<class T> string Repository<T>::getFileName() {
 }
 
 //Desc: adds a new element in repo
-//In: e, IEntity* - the new element
+//In: e, T* - the new element
 //Out: -
-template<class T> void Repository<T>::add(IEntity* e) {
-	this->arr.add(e);
+template<class T> void Repository<T>::add(T* e) {
+	for (size_t i = 0; i < this->arr.size(); i++)
+		if (this->arr[i]->getID() == e->getID())
+			throw MyException("ID must be unique!");
+	this->arr.push_back(e->clone());
 	this->saveToFile();
 }
 
 //Desc: deletes an element from repo
-//In: e, IEntity* - the element to be deleted
+//In: e, T* - the element to be deleted
 //Out: -
 template<class T> void Repository<T>::remove(int id) {
-	this->arr.removeElem(id);
-	this->saveToFile();
+	size_t i = 0;
+	while (i < this->arr.size() && this->arr[i]->getID() != id)
+		i++;
+	if (i < this->arr.size()) {
+		delete this->arr[i];
+		this->arr.erase(this->arr.begin() + i);
+
+		this->saveToFile();
+	}
+	else {
+		throw MyException("Couldn't find the given id to delete!");
+	}
 }
 
 
@@ -90,50 +106,13 @@ template<class T> void Repository<T>::remove(int id) {
 //Out: -
 template<class T> void Repository<T>::loadFromFile() {
 	if (this->fileName != "") {
-		this->arr.empty();
 		ifstream f(this->fileName);
 
-		string delim = ",";
 		string line;
-		string identifier = "";
+
 		while (getline(f, line)) {
-			identifier = line[0];
-			line.erase(0, 2);
-
-			size_t pos = line.find(delim);
-			int id = stoi(line.substr(0, pos));
-			line.erase(0, pos + 1);
-
-			pos = line.find(delim);
-			string name = line.substr(0, pos);
-			line.erase(0, pos + 1);
-
-			if (identifier == "M") {
-				pos = line.find(delim);
-				bool prescription = (line.substr(0, pos) == "0") ? false : true;
-				line.erase(0, pos + 1);
-
-				pos = line.find(delim);
-				int stockNr = stoi(line.substr(0, pos));
-				line.erase(0, pos + 1);
-
-				pos = line.find(delim);
-				string producer = line.substr(0, pos);
-
-				Medicament m(id, name, prescription, stockNr, producer);
-				this->arr.add(&m);
-			}
-			else {
-				pos = line.find(delim);
-				string email = line.substr(0, pos);
-				line.erase(0, pos + 1);
-
-				pos = line.find(delim);
-				int accessDegree = stoi(line.substr(0, pos));
-
-				Employee e(id, name, email, accessDegree);
-				this->arr.add(&e);
-			}
+			T elem(line, ' ');
+			this->arr.push_back(elem.clone());
 		}
 	}
 }
@@ -145,69 +124,67 @@ template<class T> void Repository<T>::saveToFile() {
 	if (this->fileName != "") {
 		ofstream g(this->fileName);
 
-		for (int i = 0; i < this->arr.getSize(); i++)
-			g << this->arr.getElemPos(i)->toString(",") << '\n';
+		for (size_t i = 0; i < this->arr.size(); i++)
+			g << this->arr[i]->toString(" ") << '\n';
 	}
 }
 
 //Desc: updates an element from Repository
-//In: e1, IEntity* - the element to be updated
-//	  e2, IEntity* - the eleemnt to be updated with
+//In: e1, T* - the element to be updated
+//	  e2, T* - the eleemnt to be updated with
 //Out: -
-template<class T> void Repository<T>::update(IEntity* e1, IEntity* e2) {
-	/*
-	int i = 0;
-	while (i < this->arr.getSize()) {
-		if (e1->equals(arr.getElemPos(i)) == true) {
-			this->arr.removeElem(e1);
-			this->arr.add(e2);
+template<class T> void Repository<T>::update(T* e1, T* e2) {
+	bool result = false;
+	
+	for (size_t i = 0; i < this->arr.size(); i++)
+		if (this->arr[i]->equals(e1)) {
+			delete this->arr[i];
+			this->arr[i] = e2->clone();
+			result = true;
+
 			this->saveToFile();
 		}
-		i++;
-	}*/
-	IIterator* it = this->arr.getIterator();
-	while (it->isValid()) {
-		if (it->getCrtElem()->equals(e1)) {
-			delete it->getCrtElem();
-			IEntity* en = it->getCrtElem();
-			en = e2->clone();
-			this->saveToFile();
-		}
-		it->moveNext();
-	}
+
+	if (result == false)
+		throw MyException("Couldn't find the given element to update!");
 }
 
 //Desc: access the element at a certain position
 //In: pos, int - the position
 //Out: the eleemnt at position pos
-template<class T> IEntity* Repository<T>::getElemPos(int pos) {
-	return this->arr.getElemPos(pos);
+template<class T> T* Repository<T>::getElemPos(int pos) {
+	if (pos < 0 || pos >= this->arr.size())
+		throw MyException("Invalid position!");
+	return this->arr[pos]->clone();
 }
 
 //Desc: access the size of the array of Repository
 //In: -
 //Out: the size of the array
 template<class T> int Repository<T>::getSize() {
-	return this->arr.getSize();
+	return this->arr.size();
 }
 
 //Desc: access the list of Repository
 //In: -
 //Out: an array of copies of the elements in Repository
-template<class T> Array Repository<T>::getAll() {
-	return this->arr;
-	/*
-	IEntity** list = new IEntity * [this->arr.getSize()];
-	for (int i = 0; i < this->arr.getSize(); i++)
-		list[i] = this->arr.getElemPos(i);
+template<class T> vector<T*> Repository<T>::getAll() {
+	vector<T*> newArr;
+	for (size_t i = 0; i < this->arr.size(); i++)
+		newArr.push_back(this->arr[i]->clone());
 
-	return list;*/
+	return newArr;
 }
 
 //Desc: deletes all the elements from Repository
 //In: -
 //Out: -
 template<class T> void Repository<T>::empty() {
-	this->arr.empty();
+	for (size_t i = 0; i < this->arr.size(); i++)
+		if (this->arr[i]) {
+			delete this->arr[i];
+			this->arr[i] = NULL;
+		}
+	this->arr.clear();
 	this->saveToFile();
 }

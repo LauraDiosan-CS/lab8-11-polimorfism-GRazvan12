@@ -1,19 +1,17 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include "TestIEntity.h"
-#include "TestMedicament.h"
-#include "TestEmployee.h"
 #include "TestRepository.h"
-#include "TestRepositoryFileTXT.h"
 #include "TestRepositoryFileCSV.h"
+#include "TestRepositoryFileTXT.h"
+#include "TestEmployee.h"
+#include "TestMedicament.h"
+#include "TestServiceEmployee.h"
+#include "TestServiceMedicine.h"
+#include "MyException.h"
+#include "UI.h"
 
 using namespace std;
 
 int main()
 {
-	TestIEntity testEnt;
-	testEnt.testAll();
 	TestMedicament testMed;
 	testMed.testAll();
 	TestEmployee testEmp;
@@ -24,31 +22,49 @@ int main()
 	testTXT.testAll();
 	TestRepositoryFileCSV testCSV;
 	testCSV.testAll();
+	TestServiceMedicine testServMed;
+	testServMed.testAll();
+	TestServiceEmployee testServEmp;
+	testServEmp.testAll();
+	
+	bool goNext = false;
+	string answer = "";
+	Repository<Employee>* repoEmp = NULL;
+	Repository<Medicament>* repoMed = NULL;
+	int number = 0;
 
-	Repository<Medicament>* repo = new RepositoryFileTXT<Medicament>();
-	Medicament* m1 = new Medicament(100, "parasinus", false, 10, "p1");
-	Medicament* m2 = new Medicament(200, "ketonal", false, 90, "p2");
-	Medicament* m3 = new Medicament(300, "antibiotic", true, 70, "p3");
+	while (goNext == false) {
+		cout << "Introduceti numarul tipului de fisier dorit:\n";
+		cout << "\t1. Fisier TXT\n";
+		cout << "\t2. Fisier CSV\n";
+		cout << "Numarul ales: ";
+		getline(cin, answer);
 
-	repo->add(m1);
-	repo->add(m2);
-	assert(repo->getAll().getSize() == 2);
-	assert(*repo->getAll()[0] == *m1);
-	assert(*repo->getAll()[1] == *m2);
-	repo->add(m3);
-	assert(*repo->getAll()[2] == *m3);
+		try {
+			number = stoi(answer);
+			if (number != 1 && number != 2)
+				throw exception();
+			goNext = true;
+		}
+		catch (...) {
+			cout << "Numarul trebuie sa fie 1 sau 2!\n";
+		}
+	}
+	
+	if (number == 1) {
+		repoEmp = new RepositoryFileTXT<Employee>("Employee.txt");
+		repoMed = new RepositoryFileTXT<Medicament>("Medicament.txt");
+	}
+	else {
+		repoEmp = new RepositoryFileCSV<Employee>("Employee.csv");
+		repoMed = new RepositoryFileCSV<Medicament>("Medicament.csv");
+	}
 
-	Medicament m1_new(100, "paracetamol", false, 50, "p1");
-	repo->update(m1, &m1_new);
-	assert(*repo->getAll()[0] != *m1);
-	assert(*repo->getAll()[0] == m1_new);
+	ServiceEmployee* servEmp = new ServiceEmployee(repoEmp);
+	ServiceMedicine* servMed = new ServiceMedicine(repoMed);
 
-	repo->remove(200);
-	assert(repo->getSize() == 2);
+	UI ui(servEmp, servMed);
+	ui.runUI();
 
-
-	delete m1;
-	delete m2;
-	delete m3;
 	return 0;
 }

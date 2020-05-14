@@ -3,70 +3,55 @@
 
 template<class T> class RepositoryFileTXT : public Repository<T> {
 public:
-	
-	RepositoryFileTXT();
-	RepositoryFileTXT(string);
-	~RepositoryFileTXT();
-
-	void loadFromFile() override;
-	void saveToFile() override;
-
-};
 
 
-//Desc: creates a new object of type RepositoryFileTXT
-//In: -
-//Out: a new object of class RepositoryFileTXT
-template<class T> RepositoryFileTXT<T>::RepositoryFileTXT() : Repository<T>() {
-	this->loadFromFile();
-}
+	//Desc: creates a new object of type RepositoryFileTXT
+	//In: -
+	//Out: a new object of class RepositoryFileTXT
+	RepositoryFileTXT() : Repository<T>() {
+		this->loadFromFile();
+	}
 
-//Desc: creates a new object of type RepositoryFileTXT
-//In: fileName, string - the file name for the new object
-//Out: a new object of class RepositoryFileTXT
-template<class T> RepositoryFileTXT<T>::RepositoryFileTXT(string fileName) : Repository<T>(fileName) {
-	this->loadFromFile();
-}
+	//Desc: creates a new object of type RepositoryFileTXT
+	//In: fileName, string - the file name for the new object
+	//Out: a new object of class RepositoryFileTXT
+	RepositoryFileTXT(string fileName) : Repository<T>(fileName) {
+		this->loadFromFile();
+	}
 
-//Desc: destroys an object of type RepositoryFileTXT
-//In: -
-//Out: -
-template<class T> RepositoryFileTXT<T>::~RepositoryFileTXT()
-{
-}
+	//Desc: destroys an object of type RepositoryFileTXT
+	//In: -
+	//Out: -
+	~RepositoryFileTXT()
+	{
+	}
 
-//Desc: reads elements from file
-//In: -
-//Out: -
-template<class T> void RepositoryFileTXT<T>::loadFromFile() {
-	if (this->fileName != "") {
-		this->arr.empty();
-		ifstream f(this->fileName);
+	//Desc: reads elements from file
+	//In: -
+	//Out: -
+	void loadFromFile() {
+		if (this->fileName != "") {
+			ifstream f(this->fileName);
 
-		string identifier = "";
-		Employee emp;
-		Medicament med;
-		while (f >> identifier) {
-			if (identifier == "M") {
-				f >> med;
-				this->arr.add(&med);
-			}
-			else {
-				f >> emp;
-				this->arr.add(&emp);
+			string line;
+
+			while (getline(f, line)) {
+				T elem(line, ' ');
+				Repository<T>::add(&elem);
 			}
 		}
 	}
-}
 
-//Desc: saves the current array of elements into a file
-//In: -
-//Out: -
-template<class T> void RepositoryFileTXT<T>::saveToFile() {
-	if (this->fileName != "") {
-		ofstream g(this->fileName);
+	//Desc: saves the current array of elements into a file
+	//In: -
+	//Out: -
+	void saveToFile() {
+		if (this->fileName != "") {
+			ofstream g(this->fileName);
 
-		for (int i = 0; i < this->arr.getSize(); i++)
-			g << this->arr.getElemPos(i)->toString(" ") << '\n';
+			for (size_t i = 0; i < this->arr.size(); i++)
+				g << this->arr[i]->toString(" ") << '\n';
+		}
 	}
-}
+};
+

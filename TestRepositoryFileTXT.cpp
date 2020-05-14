@@ -29,7 +29,7 @@ void TestRepositoryFileTXT::testSettersAndGetters() {
 	repo.setFileName("Test.txt");
 	assert(repo.getFileName() == "Test.txt");
 
-	Employee *e = new Employee(1, "nicu", "nicu@ubb", 4);
+	Employee* e = new Employee(1, "nicu", "nicu@ubb", 4);
 	repo.add(e);
 	assert(repo.getSize() == 1 && (*(repo.getElemPos(0)) == *e) == true);
 
@@ -47,7 +47,6 @@ void TestRepositoryFileTXT::testFileFunctions() {
 
 	Employee* e = new Employee(1, "nicu", "nicu@ubb", 4);
 	repo.add(e);
-	repo.loadFromFile();
 	assert(repo.getSize() == 1);
 
 	repo.empty();
