@@ -12,6 +12,8 @@ using namespace std;
 
 int main()
 {
+	srand(time(NULL));
+
 	TestMedicament testMed;
 	testMed.testAll();
 	TestEmployee testEmp;
@@ -27,12 +29,14 @@ int main()
 	TestServiceEmployee testServEmp;
 	testServEmp.testAll();
 	
+	
+	/*
 	bool goNext = false;
 	string answer = "";
 	Repository<Employee>* repoEmp = NULL;
 	Repository<Medicament>* repoMed = NULL;
 	int number = 0;
-
+	
 	while (goNext == false) {
 		cout << "Introduceti numarul tipului de fisier dorit:\n";
 		cout << "\t1. Fisier TXT\n";
@@ -64,7 +68,7 @@ int main()
 	ServiceMedicine* servMed = new ServiceMedicine(repoMed);
 
 	UI ui(servEmp, servMed);
-	ui.runUI();
+	ui.runUI();*/
 
 	return 0;
 }

@@ -10,6 +10,7 @@ private:
 	void testDelete();
 	void testUpdate();
 	void testCheckUser();
+	void testRandomGenerator();
 public:
 	void testAll();
 };

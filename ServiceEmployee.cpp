@@ -34,32 +34,25 @@ void ServiceEmployee::setRepo(Repository<Employee>* repo) {
 //Desc: operates the functions to add a new Employee
 //In: the new employee's values
 //Out: -
-void ServiceEmployee::add(int id, string name, string email, int accessDegree) {
+void ServiceEmployee::add(int id, string name, string email, int accessDegree) throw(ValidationException, MyException) {
 	Employee emp(id, name, email, accessDegree);
-	try {
-		this->repo->add(&emp);
-	}
-	catch (MyException& exc) {
-		throw exc;
-	}
+
+	this->valEmp.validate(&emp);
+	this->repo->add(&emp);
 }
 
 //Desc: operates the functions to delete an Employee
 //In: the employee's id
 //Out: -
-void ServiceEmployee::remove(int id) {
-	try {
-		this->repo->remove(id);
-	}
-	catch (MyException& exc) {
-		throw exc;
-	}
+void ServiceEmployee::remove(int id) throw(MyException) {
+	this->repo->remove(id);
 }
 
 //Desc: operates the functions to update an existing Employee
 //In: 
 //Out: -
-void ServiceEmployee::update(int id, string newName, string newEmail, int newAccessDegree) {
+void ServiceEmployee::update(int id, string newName, string newEmail, int newAccessDegree) 
+		throw(ValidationException, MyException) {
 	vector<Employee*> v = this->repo->getAll();
 	Employee* emp = NULL;
 
@@ -68,9 +61,11 @@ void ServiceEmployee::update(int id, string newName, string newEmail, int newAcc
 			emp = v[i]->clone();
 
 	if (emp == NULL)
-		throw MyException("Couldn.t find the given id to update!");
+		throw MyException("Couldn't find the given id to update!");
 
 	Employee newEmp(id, newName, newEmail, newAccessDegree);
+	this->valEmp.validate(emp);
+	this->valEmp.validate(&newEmp);
 	this->repo->update(emp, &newEmp);
 
 	delete emp;
@@ -83,13 +78,8 @@ void ServiceEmployee::update(int id, string newName, string newEmail, int newAcc
 //Desc: access an Employee at a certain position
 //In: pos, int - the position
 //Out: the employee at position pos
-Employee* ServiceEmployee::getElemPos(int pos) {
-	try {
-		return this->repo->getElemPos(pos);
-	}
-	catch (MyException& exc) {
-		throw exc;
-	}
+Employee* ServiceEmployee::getElemPos(int pos) throw(MyException) {
+	return this->repo->getElemPos(pos);
 }
 
 //Desc: access the size of the list of employees
@@ -107,17 +97,17 @@ vector<Employee*> ServiceEmployee::getAll() {
 }
 
 bool ServiceEmployee::checkUser(string user, string password) {
-	size_t pos = user.find("@");
-	string pass = user.substr(0, pos);
-	bool condition = false;
+	//size_t pos = user.find("@");
+	//string pass = user.substr(0, pos);
+	//bool condition = false;
 
-	if (pass != password)
-		return false;
+	//if (pass != password)
+		//return false;
 
 	vector<Employee*> v = this->repo->getAll();
 	for (size_t i = 0; i < v.size(); i++)
-		if (v[i]->getEmail() == user)
-			condition = true;
+		if (v[i]->getEmail() == user && v[i]->getName() == password)
+			return true;
 
 	for(size_t i = 0; i < v.size(); i++)
 		if (v[i]) {
@@ -125,7 +115,7 @@ bool ServiceEmployee::checkUser(string user, string password) {
 			v[i] = NULL;
 		}
 
-	return condition;
+	return false;
 }
 
 bool ServiceEmployee::modifyAccessDegree(string user, int id, int newAccessDegree) {

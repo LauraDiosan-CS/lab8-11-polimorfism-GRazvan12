@@ -74,10 +74,10 @@ template<class T> string Repository<T>::getFileName() {
 //Desc: adds a new element in repo
 //In: e, T* - the new element
 //Out: -
-template<class T> void Repository<T>::add(T* e) {
-	for (size_t i = 0; i < this->arr.size(); i++)
-		if (this->arr[i]->getID() == e->getID())
-			throw MyException("ID must be unique!");
+template<class T> void Repository<T>::add(T* e) throw(MyException) {
+	//for (size_t i = 0; i < this->arr.size(); i++)
+		//if (this->arr[i]->getID() == e->getID())
+			//throw MyException("ID must be unique!");
 	this->arr.push_back(e->clone());
 	this->saveToFile();
 }
@@ -85,7 +85,7 @@ template<class T> void Repository<T>::add(T* e) {
 //Desc: deletes an element from repo
 //In: e, T* - the element to be deleted
 //Out: -
-template<class T> void Repository<T>::remove(int id) {
+template<class T> void Repository<T>::remove(int id) throw(MyException) {
 	size_t i = 0;
 	while (i < this->arr.size() && this->arr[i]->getID() != id)
 		i++;
@@ -133,7 +133,7 @@ template<class T> void Repository<T>::saveToFile() {
 //In: e1, T* - the element to be updated
 //	  e2, T* - the eleemnt to be updated with
 //Out: -
-template<class T> void Repository<T>::update(T* e1, T* e2) {
+template<class T> void Repository<T>::update(T* e1, T* e2) throw(MyException) {
 	bool result = false;
 	
 	for (size_t i = 0; i < this->arr.size(); i++)
@@ -152,7 +152,7 @@ template<class T> void Repository<T>::update(T* e1, T* e2) {
 //Desc: access the element at a certain position
 //In: pos, int - the position
 //Out: the eleemnt at position pos
-template<class T> T* Repository<T>::getElemPos(int pos) {
+template<class T> T* Repository<T>::getElemPos(int pos) throw(MyException) {
 	if (pos < 0 || pos >= this->arr.size())
 		throw MyException("Invalid position!");
 	return this->arr[pos]->clone();

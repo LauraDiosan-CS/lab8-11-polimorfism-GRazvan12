@@ -20,10 +20,14 @@ bool UI::login(string& user, string& password) {
 	string answer = "";
 
 	while (true) {
-		cout << "Introduceti \"x\" pentru a renunta la logare sau apasati Enter pentru a continua: ";
-		getline(cin, answer);
-		if (answer == "x")
-			return false;
+		do {
+			cout << "Introduceti \"x\" pentru a renunta la logare sau apasati Enter pentru a continua: ";
+			getline(cin, answer);
+			if (answer == "x")
+				return false;
+			if (answer != "")
+				cout << "Trebuie sa tastati Enter pentru a continua!\n";
+		} while (answer != "");
 
 		cout << "-----------------------------------\n";
 		cout << "Introduceti email-ul si parola:\n";
@@ -60,47 +64,53 @@ void UI::findMedicament() {
 }
 
 void UI::addMedicament() {
+	string id, stockNr;
+	string name, producer;
+	string needPresc;
+
+	cout << "Introduceti id: ";
+	getline(cin, id);
+	cout << "Introduceti numele: ";
+	getline(cin, name);
+	cout << "Necesita reteta?(0 sau 1) ";
+	getline(cin, needPresc);
+	cout << "Introduceti numarul de medicamente din stoc: ";
+	getline(cin, stockNr);
+	cout << "Introduceti producatorul: ";
+	getline(cin, producer);
+	
 	try {
-		int id, stockNr;
-		string name, producer, prescription;
-		bool needPresc;
-
-		cout << "Introduceti id: ";
-		cin >> id;
-		cin.get();
-		cout << "Introduceti numele: ";
-		getline(cin, name);
-		cout << "Necesita reteta?(0 sau 1) ";
-		getline(cin, prescription);
-		if (prescription == "0")
-			needPresc = false;
-		else
-			needPresc = true;
-		cout << "Introduceti numarul de medicamente din stoc: ";
-		cin >> stockNr;
-		cin.get();
-		cout << "Introduceti producatorul: ";
-		getline(cin, producer);
-
-		this->servMed->add(id, name, needPresc, stockNr, producer);
+		this->valMedicament.validate(id, name, needPresc, stockNr, producer);
+		int medID = stoi(id);
+		int medStockNr = stoi(stockNr);
+		bool prescription = (needPresc == "1") ? true : false;
+		this->servMed->add(medID, name, prescription, medStockNr, producer);
+	}
+	catch (ValidationException& vexc) {
+		cout << vexc.what();
 	}
 	catch (MyException& exc) {
 		cout << exc.what() << '\n';
 	}
 	catch (...) {
-		cout << "Invalid input\n";
+		cout << "Alta eroare\n";
 	}
 }
 
 void UI::deleteMedicament() {
+	string id;
+
+	cout << "Introduceti id-ul medicamentului de sters: ";
+	getline(cin, id);
+
 	try {
-		int id;
+		string_to_int(id);
+		int medID = stoi(id);
 
-		cout << "Introduceti id-ul medicamentului de sters: ";
-		cin >> id;
-		cin.get();
-
-		this->servMed->remove(id);
+		this->servMed->remove(medID);
+	}
+	catch (ValidationException& vexc) {
+		cout << vexc.what();
 	}
 	catch (MyException& exc) {
 		cout << exc.what() << '\n';
@@ -111,29 +121,31 @@ void UI::deleteMedicament() {
 }
 
 void UI::updateMedicament() {
+	string id, newStockNr;
+	string newName, newProducer;
+	string newNeedPresc;
+
+	cout << "Introduceti id-ul medicamentului de modificat: ";
+	getline(cin, id);
+	cout << "Introduceti noul nume: ";
+	getline(cin, newName);
+	cout << "Va necesita reteta?(0 sau 1) ";
+	getline(cin, newNeedPresc);
+	cout << "Introduceti noul numar de medicamente din stoc: ";
+	getline(cin, newStockNr);
+	cout << "Introduceti noul producator: ";
+	getline(cin, newProducer);
+	
 	try {
-		int id, newStockNr;
-		string newName, newProducer, prescription;
-		bool newNeedPresc;
+		this->valMedicament.validate(id, newName, newNeedPresc, newStockNr, newProducer);
+		int idVechi = stoi(id);
+		int medNewStockNr = stoi(newStockNr);
+		bool medNewNeedPresc = (newNeedPresc == "1") ? true : false;
 
-		cout << "Introduceti id-ul medicamentului de moodificat: ";
-		cin >> id;
-		cin.get();
-		cout << "Introduceti noul nume: ";
-		getline(cin, newName);
-		cout << "Va necesita reteta?(0 sau 1) ";
-		getline(cin, prescription);
-		if (prescription == "0")
-			newNeedPresc = false;
-		else
-			newNeedPresc = true;
-		cout << "Introduceti noul numar de medicamente din stoc: ";
-		cin >> newStockNr;
-		cin.get();
-		cout << "Introduceti noul producator: ";
-		getline(cin, newProducer);
-
-		this->servMed->update(id, newName, newNeedPresc, newStockNr, newProducer);
+		this->servMed->update(idVechi, newName, medNewNeedPresc, medNewStockNr, newProducer);
+	}
+	catch (ValidationException& vexc) {
+		cout << vexc.what();
 	}
 	catch (MyException& exc) {
 		cout << exc.what() << '\n';
@@ -144,20 +156,29 @@ void UI::updateMedicament() {
 }
 
 void UI::modifyAccessDegree(string& user, string& password) {
+	string id, newAccessDegree;
+	cout << "Introduceti id-ul utilizatorului al carui grad de acces doriti sa il modificati: ";
+	getline(cin, id);
+	cout << "Introduceti noul grad de accesal acestuia: ";
+	getline(cin, newAccessDegree);
+	
 	try {
-		int id, newAccessDegree;
-		cout << "Introduceti id-ul utilizatorului al carui grad deacces doriti sa il modificati: ";
-		cin >> id;
-		cin.get();
-		cout << "Introduceti noul grad de accesal acestuia: ";
-		cin >> newAccessDegree;
-		cin.get();
+		string_to_int(id);
+		string_to_int(newAccessDegree);
+		int empID = stoi(id);
+		int empAccessDegree = stoi(newAccessDegree);
 
-		bool result = this->servEmp->modifyAccessDegree(user, id, newAccessDegree);
+		bool result = this->servEmp->modifyAccessDegree(user,empID, empAccessDegree);
 		if (result == false)
 			cout << "Nu a putut fi efectuata aceasta modificare.\n";
 		else
 			cout << "Modificare efectuata cu succes\n";
+	}
+	catch (ValidationException& vexc) {
+		cout << vexc.what();
+	}
+	catch (MyException& exc) {
+		cout << exc.what() << '\n';
 	}
 	catch (...) {
 		cout << "Invalid input\n";

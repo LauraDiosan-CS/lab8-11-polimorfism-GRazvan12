@@ -34,71 +34,63 @@ void ServiceMedicine::setRepo(Repository<Medicament>* repo) {
 //Desc: operates the functions to add a new Medicament
 //In: 
 //Out: -
-void ServiceMedicine::add(int id, string name, bool needPresc, int stockNr, string producer) {
+void ServiceMedicine::add(int id, string name, bool needPresc, int stockNr, string producer) 
+		throw(ValidationException, MyException) {
 	Medicament med(id, name, needPresc, stockNr, producer);
-	try {
-		this->repo->add(&med);
-	}
-	catch (MyException& exc) {
-		throw exc;
-	}
+	
+	this->valMed.validate(&med);
+	this->repo->add(&med);
 }
 
-void ServiceMedicine::add(Medicament* med) {
-	try {
-		this->repo->add(med);
-	}
-	catch (MyException& exc) {
-		throw exc;
-	}
+void ServiceMedicine::add(Medicament* med) throw(ValidationException, MyException) {
+	this->valMed.validate(med);
+	this->repo->add(med);
 }
 
 //Desc: operates the functions to delete Medicament
 //In: 
 //Out: -
-void ServiceMedicine::remove(int id) {
+void ServiceMedicine::remove(int id) throw(MyException) {
 	this->repo->remove(id);
 }
 
 //Desc: operates the functions to update an existing Medicament
 //In: 
 //Out: -
-void ServiceMedicine::update(int id, string newName, bool newNeed, int newStockNr, string newProducer) {
-	try {
-		vector<Medicament*> v = this->repo->getAll();
-		Medicament* med = NULL;
+void ServiceMedicine::update(int id, string newName, bool newNeed, int newStockNr, string newProducer) 
+		throw(ValidationException, MyException) {
+	vector<Medicament*> v = this->repo->getAll();
+	Medicament* med = NULL;
 
-		for (size_t i = 0; i < v.size(); i++)
-			if (v[i]->getID() == id)
-				med = v[i]->clone();
+	for (size_t i = 0; i < v.size(); i++)
+		if (v[i]->getID() == id)
+			med = v[i]->clone();
 
-		Medicament newMed(id, newName, newNeed, newStockNr, newProducer);
-		this->repo->update(med, &newMed);
+	if(med == NULL)
+		throw MyException("Couldn't find the given id to update!");
 
-		delete med;
-		for (size_t i = 0; i < v.size(); i++) {
-			delete v[i];
-			v[i] = NULL;
-		}
-	}
-	catch (MyException& exc) {
-		throw exc;
+	Medicament newMed(id, newName, newNeed, newStockNr, newProducer);
+	this->valMed.validate(med);
+	this->valMed.validate(&newMed);
+	this->repo->update(med, &newMed);
+
+	delete med;
+	for (size_t i = 0; i < v.size(); i++) {
+		delete v[i];
+		v[i] = NULL;
 	}
 }
 
-void ServiceMedicine::update(Medicament* m1, Medicament* m2) {
-	try {
-		this->repo->update(m1, m2);
-	}
-	catch (MyException& exc) {
-		throw exc;
-	}
+void ServiceMedicine::update(Medicament* m1, Medicament* m2) throw(ValidationException, MyException) {
+	this->valMed.validate(m1);
+	this->valMed.validate(m2);
+	this->repo->update(m1, m2);
 }
 
 //Desc: access a Medicament at a certain position
 //In: pos, int - the position
 //Out: the Medicament at position pos
-Medicament* ServiceMedicine::getElemPos(int pos) {
+Medicament* ServiceMedicine::getElemPos(int pos) throw(MyException) {
 	return this->repo->getElemPos(pos);
 }
 

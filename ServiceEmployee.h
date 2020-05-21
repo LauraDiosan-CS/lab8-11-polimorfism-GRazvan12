@@ -1,12 +1,15 @@
 #pragma once
 #include "RepositoryFileCSV.h"
 #include "RepositoryFileTXT.h"
+#include "ValidationException.h"
+#include "ValidatorEmployee.h"
 
 using namespace std;
 
 class ServiceEmployee {
 private:
 	Repository<Employee>* repo;
+	ValidatorEmployee valEmp;
 public:
 	ServiceEmployee();
 	ServiceEmployee(Repository<Employee>*);

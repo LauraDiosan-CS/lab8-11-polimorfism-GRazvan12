@@ -1,12 +1,15 @@
 #pragma once
 #include "RepositoryFileCSV.h"
 #include "RepositoryFileTXT.h"
+#include "ValidationException.h"
+#include "ValidatorMedicament.h"
 
 using namespace std;
 
 class ServiceMedicine {
 private:
 	Repository<Medicament>* repo;
+	ValidatorMedicament valMed;
 public:
 	ServiceMedicine();
 	ServiceMedicine(Repository<Medicament>*);
